@@ -720,6 +720,24 @@ def get_data_access_method():
         return VMWARE_RPCTOOL
     return None
 
+def json_serialize_default(_obj):
+    """Handler for types which aren't json serializable."""
+    try:
+        return 'ci-b64:{0}'.format(b64e(_obj))
+    except AttributeError:
+        return 'Warning: redacted unserializable type {0}'.format(type(_obj))
+
+def json_dumps(data):
+    """Return data in nicely formatted json."""
+    try:
+        return json.dumps(
+            data, indent=1, sort_keys=True, separators=(',', ': '),
+            default=json_serialize_default)
+    except UnicodeDecodeError:
+        if sys.version_info[:2] == (2, 7):
+            data = json_preserialize_binary(data)
+            return json.dumps(data)
+        raise
 
 def main():
     '''
@@ -729,7 +747,7 @@ def main():
                 'network': {'config': {'dhcp': True}}}
     host_info = wait_on_network(metadata)
     metadata = always_merger.merge(metadata, host_info)
-    print(util.json_dumps(metadata))
+    print(json_dumps(metadata))
 
 
 if __name__ == "__main__":

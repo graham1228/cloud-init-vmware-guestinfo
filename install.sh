@@ -75,10 +75,10 @@ if [ -z "$(get_py_mod_dir deepmerge)" ] || [ -z "$(get_py_mod_dir netifaces)" ];
   fi
   case "${PYTHON_VERSION}" in
   2)
-    python -m pip install -r "${_requirements}"
+    pip install -r "${_requirements}"
     ;;
   3)
-    python3 -m pip install -r "${_requirements}"
+    pip install -r "${_requirements}"
     ;;
   esac
 fi
